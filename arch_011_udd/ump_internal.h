@@ -42,13 +42,13 @@ typedef enum ump_cache_enabled
 typedef struct ump_mem
 {
 	ump_secure_id secure_id;       /**< UMP device driver cookie */
-	void * mapped_mem;             /**< Mapped memory; all read and write use this */
+	void *mapped_mem;              /**< Mapped memory; all read and write use this */
 	unsigned long size;            /**< Size of allocated memory */
-	_ump_osu_lock_t* ref_lock;    /**< Lock protection ref_count */
+	_ump_osu_lock_t *ref_lock;    /**< Lock protection ref_count */
 	int ref_count;                 /**< The reference count of the ump_handle in userspace. It is used for finding out
-	                                    when to free the memory used by this userspace handle. It is NOT the same as the
-	                                    real ump_mem reference count in the devicedriver which do reference counting
-	                                    for the memory that this handle reveals. */
+                                        when to free the memory used by this userspace handle. It is NOT the same as the
+                                        real ump_mem reference count in the devicedriver which do reference counting
+                                        for the memory that this handle reveals. */
 	unsigned long cookie;          /**< cookie for use in arch_unmap calls */
 	ump_cache_enabled is_cached;
 } ump_mem;

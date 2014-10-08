@@ -24,37 +24,37 @@
  * File implements the user side of the OS interface
  */
 
-void *_ump_osu_calloc( u32 n, u32 size )
+void *_ump_osu_calloc(u32 n, u32 size)
 {
-	return calloc( n, size );
+	return calloc(n, size);
 }
 
-void *_ump_osu_malloc( u32 size )
+void *_ump_osu_malloc(u32 size)
 {
-	return malloc( size );
+	return malloc(size);
 }
 
-void *_ump_osu_realloc( void *ptr, u32 size )
+void *_ump_osu_realloc(void *ptr, u32 size)
 {
-	return realloc( ptr, size );
+	return realloc(ptr, size);
 }
 
-void _ump_osu_free( void *ptr )
+void _ump_osu_free(void *ptr)
 {
-	free( ptr );
+	free(ptr);
 }
 
-void *_ump_osu_memcpy( void *dst, const void *src, u32	len )
+void *_ump_osu_memcpy(void *dst, const void *src, u32   len)
 {
-	return memcpy( dst, src, len );
+	return memcpy(dst, src, len);
 }
 
-void *_ump_osu_memset( void *ptr, u32 chr, u32 size )
+void *_ump_osu_memset(void *ptr, u32 chr, u32 size)
 {
-	return memset( ptr, chr, size );
+	return memset(ptr, chr, size);
 }
 
-int _ump_osu_memcmp( const void *ptr1, const void *ptr2, u32 size )
+int _ump_osu_memcmp(const void *ptr1, const void *ptr2, u32 size)
 {
-	return memcmp( ptr1, ptr2, size );
+	return memcmp(ptr1, ptr2, size);
 }

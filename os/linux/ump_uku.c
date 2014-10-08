@@ -43,10 +43,11 @@ static int ump_ioctl_api_version_used = UMP_IOCTL_API_VERSION;
  */
 static const char ump_device_file_name[] = "/dev/ump";
 
-_ump_osu_errcode_t _ump_uku_open( void **context )
+_ump_osu_errcode_t _ump_uku_open(void **context)
 {
 	int ump_device_file;
-	if(NULL == context)
+
+	if (NULL == context)
 	{
 		return _UMP_OSU_ERR_FAULT;
 	}
@@ -60,11 +61,12 @@ _ump_osu_errcode_t _ump_uku_open( void **context )
 
 	{
 		struct _ump_uk_api_version_s args;
-		args.ctx     = (void*)ump_device_file;
+		args.ctx     = (void *)ump_device_file;
 		args.version = UMP_IOCTL_API_VERSION;
 		args.compatible = 3;
 		ump_driver_ioctl(args.ctx, UMP_IOC_QUERY_API_VERSION, &args);
-		if ( 1 != args.compatible )
+
+		if (1 != args.compatible)
 		{
 			if (IS_API_MATCH(MAKE_VERSION_ID(1), args.version))
 			{
@@ -73,9 +75,9 @@ _ump_osu_errcode_t _ump_uku_open( void **context )
 			}
 			else
 			{
-				UMP_PRINTF("The UMP devicedriver is version: %d, UMP libraries is version: %d.\n", GET_VERSION(args.version), GET_VERSION(UMP_IOCTL_API_VERSION) );
-			   close(ump_device_file);
-			   return _UMP_OSU_ERR_FAULT;
+				UMP_PRINTF("The UMP devicedriver is version: %d, UMP libraries is version: %d.\n", GET_VERSION(args.version), GET_VERSION(UMP_IOCTL_API_VERSION));
+				close(ump_device_file);
+				return _UMP_OSU_ERR_FAULT;
 			}
 		}
 	}
@@ -84,20 +86,20 @@ _ump_osu_errcode_t _ump_uku_open( void **context )
 	return _UMP_OSU_ERR_OK;
 }
 
-_ump_osu_errcode_t _ump_uku_close( void **context )
+_ump_osu_errcode_t _ump_uku_close(void **context)
 {
-	if(NULL == context)
+	if (NULL == context)
 	{
 		return _UMP_OSU_ERR_FAULT;
 	}
 
-	if(-1 == (int)*context)
+	if (-1 == (int)*context)
 	{
 		return _UMP_OSU_ERR_FAULT;
 	}
 
 	close((int)*context);
-	*context = (void *)-1;
+	*context = (void *) - 1;
 
 	return _UMP_OSU_ERR_OK;
 }
@@ -121,34 +123,37 @@ _ump_osu_errcode_t _ump_uku_size_get(_ump_uk_size_get_s *args)
 void _ump_uku_msynch(_ump_uk_msync_s *args)
 {
 	/* This is for backwards compatibillity */
-	if ( MAKE_VERSION_ID(1) == ump_ioctl_api_version_used)
+	if (MAKE_VERSION_ID(1) == ump_ioctl_api_version_used)
 	{
 		args->is_cached = 0;
-		if ( _UMP_UK_MSYNC_READOUT_CACHE_ENABLED != args->op )
+
+		if (_UMP_UK_MSYNC_READOUT_CACHE_ENABLED != args->op)
 		{
 			UMP_DEBUG_PRINT(3, ("Warning: Doing UMP cache flush operations on a Device Driver that does not support cached UMP mem.\n"));
 		}
+
 		return;
 	}
+
 	ump_driver_ioctl(args->ctx, UMP_IOC_MSYNC, args);
 }
 
-void _ump_uku_cache_operations_control( _ump_uk_cache_operations_control_s *args )
+void _ump_uku_cache_operations_control(_ump_uk_cache_operations_control_s *args)
 {
 	ump_driver_ioctl(args->ctx, UMP_IOC_CACHE_OPERATIONS_CONTROL, args);
 }
 
-void _ump_uku_switch_hw_usage( _ump_uk_switch_hw_usage_s *args )
+void _ump_uku_switch_hw_usage(_ump_uk_switch_hw_usage_s *args)
 {
 	ump_driver_ioctl(args->ctx, UMP_IOC_SWITCH_HW_USAGE, args);
 }
 
-void _ump_uku_lock( _ump_uk_lock_s *args )
+void _ump_uku_lock(_ump_uk_lock_s *args)
 {
 	ump_driver_ioctl(args->ctx, UMP_IOC_LOCK, args);
 }
 
-void _ump_uku_unlock( _ump_uk_unlock_s *args )
+void _ump_uku_unlock(_ump_uk_unlock_s *args)
 {
 	ump_driver_ioctl(args->ctx, UMP_IOC_UNLOCK, args);
 }
@@ -156,7 +161,8 @@ void _ump_uku_unlock( _ump_uk_unlock_s *args )
 int _ump_uku_map_mem(_ump_uk_map_mem_s *args)
 {
 	int flags;
-	if( -1 == (int)args->ctx )
+
+	if (-1 == (int)args->ctx)
 	{
 		return -1;
 	}
@@ -164,27 +170,31 @@ int _ump_uku_map_mem(_ump_uk_map_mem_s *args)
 	flags = MAP_SHARED;
 
 	/* This is for backwards compatibillity */
-	if ( MAKE_VERSION_ID(1) == ump_ioctl_api_version_used)
+	if (MAKE_VERSION_ID(1) == ump_ioctl_api_version_used)
 	{
 		args->is_cached = 0;
 	}
 
 	/* If we want the Caching to be enabled we set the flags to be PRIVATE. The UMP DD reads this and do proper handling
 	   Note: this enforces the user to use proper invalidation*/
-	if ( args->is_cached ) flags = MAP_PRIVATE;
+	if (args->is_cached)
+	{
+		flags = MAP_PRIVATE;
+	}
 
-	args->mapping = mmap(NULL, args->size, PROT_READ | PROT_WRITE ,flags , (int)args->ctx, (off_t)args->secure_id * sysconf(_SC_PAGE_SIZE));
+	args->mapping = mmap(NULL, args->size, PROT_READ | PROT_WRITE , flags , (int)args->ctx, (off_t)args->secure_id * sysconf(_SC_PAGE_SIZE));
+
 	if (MAP_FAILED == args->mapping)
 	{
 		return -1;
 	}
 
-    args->cookie = 0; /* Cookie is not used in linux _ump_uku_unmap_mem */
+	args->cookie = 0; /* Cookie is not used in linux _ump_uku_unmap_mem */
 
 	return 0;
 }
 
-void _ump_uku_unmap_mem( _ump_uk_unmap_mem_s *args )
+void _ump_uku_unmap_mem(_ump_uk_unmap_mem_s *args)
 {
 	/*
 	 * If a smaller size is used Linux will just remove the requested range but don't tell
@@ -200,14 +210,18 @@ static _ump_osu_errcode_t ump_driver_ioctl(void *context, u32 command, void *arg
 {
 	/*UMP_CHECK_NON_NULL(args, _UMP_OSK_ERR_INVALID_ARGS);*/
 
-   	/* check for a valid file descriptor */
+	/* check for a valid file descriptor */
 	/** @note manual type safety check-point */
-	if( -1 == (int)context )
+	if (-1 == (int)context)
 	{
 		return _UMP_OSU_ERR_FAULT;
 	}
 
 	/* call ioctl handler of driver */
-	if (0 != ioctl((int)context, command, args)) return -1;
+	if (0 != ioctl((int)context, command, args))
+	{
+		return _UMP_OSU_ERR_FAULT;
+	}
+
 	return _UMP_OSU_ERR_OK;
 }
